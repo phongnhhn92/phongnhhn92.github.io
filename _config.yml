@@ -7,7 +7,7 @@
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Welcome villians"
+title                    : "Phong Nguyen / My Website"
 title_separator          : "-"
 name                     : &name "Your Name"
 description              : &description "personal description"
@@ -96,13 +96,13 @@ author:
   flickr           :
   facebook         :
   foursquare       :
-  github           : "https://github.com/phongnhhn92"
+  github           : "phongnhhn92"
   google_plus      :
   keybase          :
   instagram        :
   impactstory      :
   lastfm           :
-  linkedin         : "https://www.linkedin.com/in/phong-nguyen-743080b7/"
+  linkedin         : "phong-nguyen-743080b7"
   orcid            :
   pinterest        :
   soundcloud       :
