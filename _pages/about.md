@@ -16,6 +16,6 @@ Feel me to reach me through email if you want to discuss more about above resear
 
 ## News
 
-**18/09/2020**: A paper titled "Sequential View Synthesis with Transformer" is accepted at ACCV 2020.
+**18/09/2020**: A paper titled ["Sequential View Synthesis with Transformer"](https://arxiv.org/abs/2004.04548) is accepted at ACCV 2020.
 
-**03/07/2020**: A paper titled "Guiding Monocular Depth Estimation Using Depth-Attention Volume" is accepted at ECCV 2020.
+**03/07/2020**: A paper titled ["Guiding Monocular Depth Estimation Using Depth-Attention Volume"](https://arxiv.org/abs/2004.02760) is accepted at ECCV 2020.
