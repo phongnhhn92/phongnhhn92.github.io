@@ -12,7 +12,7 @@ I am a PhD student at [Center for Machine Vision and Signal Analysis](https://ww
 
 I'm interested in the topic of 3D reconstruction, novel view synthesis and neural rendering. My research combines 3D computer vision and deep learning.
 
-Feel me to reach me through email if you want to discuss more about above research t
+Feel me to reach me through email if you want to discuss more about above research topics or job opportunities.
 
 ## News
 
