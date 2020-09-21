@@ -14,6 +14,7 @@ I'm interested in the topic of 3D reconstruction, novel view synthesis and neura
 
 I am also curious about effective learning and teaching techniques.
 
-##### News
-18/09/2020: A paper titled "Sequential View Synthesis with Transformer" is accepted at ACCV 2020.
-03/07/2020: A paper titled "Guiding Monocular Depth Estimation Using Depth-Attention Volume" is accepted at ECCV 2020.
+## News
+
+**18/09/2020**: A paper titled "Sequential View Synthesis with Transformer" is accepted at ACCV 2020.\
+**03/07/2020**: A paper titled "Guiding Monocular Depth Estimation Using Depth-Attention Volume" is accepted at ECCV 2020.
