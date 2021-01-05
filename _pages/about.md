@@ -16,7 +16,7 @@ Feel me to reach me through email if you want to discuss more about above resear
 
 ## News
 
-**29/11/2020**: A paper titled ["RGBD-Net: Predicting color and depth images for novel views synthesis"](https://arxiv.org/abs/2004.04548) available on arxiv. 
+**29/11/2020**: A paper titled ["RGBD-Net: Predicting color and depth images for novel views synthesis"](https://arxiv.org/abs/2004.04548) is available on Arxiv. 
 
 **18/09/2020**: A paper titled ["Sequential View Synthesis with Transformer"](https://arxiv.org/abs/2004.04548) is accepted at ACCV 2020.
 
