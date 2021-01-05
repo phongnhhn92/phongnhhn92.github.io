@@ -19,3 +19,4 @@ Autonomous landing of an unmanned aerial vehicle or a drone is a challenging pro
 
 ### More qualitative results
 ![](../images/lightDenseYOLO/3.png)
+![](../images/lightDenseYOLO/4.png)
