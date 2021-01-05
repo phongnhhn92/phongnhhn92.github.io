@@ -13,4 +13,4 @@ Unmanned aerial vehicles (UAVs), which are commonly known as drones, have proved
 [paper](https://www.mdpi.com/1424-8220/17/9/1987)
 
 Proposed marker design: 
-![alt text](/images/remotePaper/1.png  "Marker")
+![](../images/remotePaper/1.png  "Marker")
