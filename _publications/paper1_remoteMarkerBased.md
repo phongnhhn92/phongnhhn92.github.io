@@ -2,7 +2,7 @@
 title: "Remote Marker-Based Tracking for UAV Landing Using Visible-Light Camera Sensor"
 collection: publications
 permalink: /publication/paper1_remoteMarkerBased
-excerpt: 'This paper is about the number 1. The number 2 is left for future work.'
+excerpt: 'Marker-based tracking for UAV landing.'
 date: 2017-08-30
 venue: 'Sensors'
 paperurl: 'https://www.mdpi.com/1424-8220/17/9/1987'
