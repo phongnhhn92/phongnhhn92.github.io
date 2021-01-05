@@ -1,5 +1,5 @@
 ---
-title: "Generative Adversarial Query Network"
+title: "Generative Adversarial Query Network (Best paper award @ SCIA 2019)"
 collection: publications
 permalink: /publication/paper3_GAQN
 excerpt: 'Combining Generative Query Network and Generative Adversarial Network for view synthesis.'
