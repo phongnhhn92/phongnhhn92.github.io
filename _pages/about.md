@@ -12,5 +12,10 @@ I am a PhD student at [Center for Machine Vision and Signal Analysis](https://ww
 
 I'm interested in the topic of 3D reconstruction, novel view synthesis and neural rendering. My research combines 3D computer vision and deep learning.
 
-My hobby is travelling and singing ^^ 
+Feel me to reach me through email if you want to discuss more about above research topics or job opportunities.
 
+## News
+
+**18/09/2020**: A paper titled ["Sequential View Synthesis with Transformer"](https://arxiv.org/abs/2004.04548) is accepted at ACCV 2020.
+
+**03/07/2020**: A paper titled ["Guiding Monocular Depth Estimation Using Depth-Attention Volume"](https://arxiv.org/abs/2004.02760) is accepted at ECCV 2020.
