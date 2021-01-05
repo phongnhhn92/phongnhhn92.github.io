@@ -12,4 +12,5 @@ I am a PhD student at [Center for Machine Vision and Signal Analysis](https://ww
 
 I'm interested in the topic of 3D reconstruction, novel view synthesis and neural rendering. My research combines 3D computer vision and deep learning.
 
-I am also curious about effective learning and teaching techniques.
+My hobby is travelling and singing ^^ 
+
