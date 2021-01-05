@@ -7,9 +7,6 @@ redirect_from:
   - /about/
   - /about.html
 ---
-
-<div style='text-align: justify;'>
-
 I am a PhD student at [Center for Machine Vision and Signal Analysis](https://www.oulu.fi/cmvs/), [University of Oulu, Finland](https://www.oulu.fi/university/), where I am co-advised by [Prof. Janne Heikkilä](https://www.oulu.fi/university/researcher/janne-heikkila) and [Prof. Esa Rahtu](https://esa.rahtu.fi/). My work is funded by the Infotech Oulu.
 
 
@@ -24,5 +21,3 @@ Feel me to reach me through email if you want to discuss more about above resear
 **18/09/2020**: A paper titled ["Sequential View Synthesis with Transformer"](https://arxiv.org/abs/2004.04548) is accepted at ACCV 2020.
 
 **03/07/2020**: A paper titled ["Guiding Monocular Depth Estimation Using Depth-Attention Volume"](https://arxiv.org/abs/2004.02760) is accepted at ECCV 2020.
-
-</div>
