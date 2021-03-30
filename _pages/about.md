@@ -15,6 +15,7 @@ I'm interested in the topic of 3D reconstruction, novel view synthesis and neura
 Feel me to reach me through [phongnhhn92@gmail.com](phongnhhn92@gmail.com) if you want to discuss more about above research topics or job opportunities.
 
 ## News
+**30/03/2021**: I am gonna join Facebook Reality Lab (FRL) as a summer research intern with ["Nikolaos Sarafianos"](https://nsarafianos.github.io/).
 
 **29/11/2020**: A paper titled ["RGBD-Net: Predicting color and depth images for novel views synthesis"](https://arxiv.org/abs/2004.04548) is available on Arxiv.
 
