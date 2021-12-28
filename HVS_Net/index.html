@@ -28,8 +28,6 @@
         <div class="row">
             <h2 class="col-md-12 text-center">
                 Human View Synthesis using a Single Sparse RGB-D Input 
-                <small>
-                </small>
             </h2>
         </div>
         <div class="row">
@@ -37,38 +35,40 @@
                 <ul class="list-inline">
                     <li>
                         <a href="https://phongnhhn.info/">
-                          Phong Nguyen
-                        </a>
-                        </br>University of Oulu
+                          Phong Nguyen 
+                        </a> <sup>1</sup>
+                        <!-- </br>University of Oulu -->
                     </li>
                     <li>
                         <a href="https://nsarafianos.github.io/">
-                            Nikolaos Sarafianos
-                        </a>
-                        </br>Meta
+                            Nikolaos Sarafianos 
+                        </a> <sup>2</sup>
+                        <!-- </br>Meta -->
                     </li>
                     <li>                
                         <a href="https://christophlassner.de/">
-                            Christoph Lassner
-                        </a>
-                        </br>Meta
+                            Christoph Lassner 
+                        </a> <sup>2</sup>
+                        <!-- </br>Meta -->
                     </li><br>
                     <li>
                         <a href="https://www.oulu.fi/university/researcher/janne-heikkila">
-                            Janne Heikkilä
-                        </a>
-                        </br>University of Oulu
+                            Janne Heikkilä 
+                        </a> <sup>1</sup>
+                        <!-- </br>University of Oulu -->
                     </li>
                     <li>
                         <a href="https://sites.google.com/site/tony2ng/">
-                          Tony Tung
-                        </a>
-                        </br>Meta
+                          Tony Tung 
+                        </a> <sup>2</sup>
+                        <!-- </br>Meta -->
                     </li>
                 </ul>
             </div>
         </div>
-
+        <div class="col-md-12 text-center">
+            <sup>1</sup> University of Oulu &ensp; &ensp;<sup>2</sup> Meta Reality Labs Research, Sausalito
+        </div>
 
         <div class="row">
                 <div class="col-md-4 col-md-offset-4 text-center">
@@ -85,12 +85,12 @@
                                 <h4><strong>Video</strong></h4>
                             </a>
                         </li>
-                        <li>
+                        <!-- <li>
                             <a href="#">
                             <image src="img/github.png" height="60px">
                                 <h4><strong>Code</strong></h4>
                             </a>
-                        </li>
+                        </li> -->
                     </ul>
                 </div>
         </div>
@@ -102,7 +102,7 @@
                 <video id="v0" width="100%" autoplay loop muted controls>
                   <source src="img/teaser.mp4" type="video/mp4" />
                 </video>
-						</div>
+			</div>
         </div>
 
 
@@ -133,7 +133,77 @@
             </div>
         </div> -->
 
-            
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Comparison of 3D point cloud transformations.
+                </h3>
+                <p class="text-justify">
+                    From a single RGB-D input, we obtain the warped image using: a depth-based warping transformation, neural point and sphere-based renderer. The novel image warped by Pulsar is significantly denser because Pulsar renderer not only provides the option to use a per-sphere radius parameter, but it also provides gradients for these radiuses, which enables to set them dynamically. 
+                </p>
+                <p style="text-align:center;">
+                    <image src="img/compare.png" height="10px" class="img-responsive">
+                </p>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Sphere-based view synthesis network
+                </h3>
+                <p class="text-justify">
+                    The feature predictor F learns radius and feature vectors of the sphere set S. We then use the sphere-based differentiable renderer Ω to densify the learned input features M and warp them to the target camera T . The projected features Mt are passed through the global context inpainting module G to generate the foreground mask, confidence map and novel image. Brighter colors of the confidence map indicate lower confidence.
+                </p>
+                <p style="text-align:center;">
+                    <image src="img/overview.png" height="5px" class="img-responsive">
+                </p>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Enhancer network
+                </h3>
+                <p class="text-justify">
+                    Using an additional occlusion-free input, we refine the initial estimated novel view by training the Enhancer network. We infer the dense correspondences of both predicted novel view and occlusion-free image using a novel HD-IUV module. The occlusion-free image is warped to the target view and then refined by an auto-encoder. The refined novel view shows better result on the occluded area compared to the initial estimated.
+                </p>
+                <p style="text-align:center;">
+                    <image src="img/enhancer.png" height="10px" class="img-responsive">
+                </p>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Results
+                </h3>
+                <p class="text-justify">
+                    We train our method on the synthetic data of the RenderPeople dataset and test the trained model on the real 3DMD scans. Qualitative results show that HVS-Net is able to generalize on unseen humans in the testing time. 
+                </p>
+                <p style="text-align:center;">
+                    <image src="img/results.png" height="50px" class="img-responsive">
+                </p>     
+                <p class="text-justify">
+                    Using a single sparse RGB-D input, point-based rendering method (SynSin) is unable to render realistic textures on the occluded regions at the target viewpoint and the skin of human is clearly different from the input image. Using just 10% of the input depth points from a single view, HVS-Net also outperform a recently proposed LookingGood method which utilizes a multi-view capture setup. 
+                </p> 
+                <video id="v0" width="100%" autoplay loop muted controls>
+                    <source src="img/compare_vid.mp4" type="video/mp4" />
+                </video>                    
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Input depth sparsity robustness
+                </h3>
+                <p class="text-justify">
+                    Finally, we show the generated novel views of HVS-Net using different level of input depth sparsity. We observe a drop of performance of HVS-Net if we use only 5% of the points in the input depth map and there is no significant different between generated novel views using 10% or 25% of the input depth points 
+                </p>
+                <video id="v0" width="100%" autoplay loop muted controls>
+                    <source src="img/depth_sparsity.mp4" type="video/mp4" />
+                </video>                 
+            </div>
+        </div>
         <!-- <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <h3>
