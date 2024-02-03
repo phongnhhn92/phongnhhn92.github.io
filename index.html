@@ -22,7 +22,7 @@
               </p>
               <p style="text-align:justify"> I am currently a Postdoc Researcher at Center For Machine Vision and Signal Analysis (<a href="https://www.oulu.fi/cmvs/">CMVS</a>), University of Oulu, Finland, where I am co-advised by 
                 <a href="https://www.oulu.fi/university/researcher/janne-heikkila">Prof. Janne Heikkilä</a> and <a href="https://esa.rahtu.fi/">Prof. Esa Rahtu.</a> 
-                I am also a Research Scientist at Spree3D - a US startup company on digital human and its application with <a href="https://minhpvo.github.io/">Dr. Minh Vo</a>.
+                I am also a Research Scientist at <a href="https://spreeai.com/">SpreeAI</a> - a US startup company on digital human and its application with <a href="https://minhpvo.github.io/">Dr. Minh Vo</a>.
               </p>
               <p style="text-align:justify">
                 I have a MS in Electronics and Electrical Engineering (Autonomous AI Drone) at Dongguk University, South Korea where I was a research assistant for <a href="http://dm.dgu.edu/index.html">Prof.Kang Ryoung Park</a>. I have a BS in Mechanical Engineering from <a href="https://en.hust.edu.vn/">HUST</a>, Vietnam.
@@ -57,6 +57,93 @@
         </tbody></table>
         
         <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>          
+          <tr onmouseout="dream_stop()" onmouseover="dream_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='dream'>
+                  <img src='images/8_dream/dream1.png' width="160"></div>
+                <img src='images/8_dream/dream2.png' width="160">
+              </div>
+              <script type="text/javascript">
+                function dream_start() {
+                  document.getElementById('dream').style.opacity = "1";
+                }
+
+                function dream_stop() {
+                  document.getElementById('dream').style.opacity = "0";
+                }
+                dream_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:middle">
+              <a href="https://www.computer.org/csdl/journal/tp/5555/01/10328666/1SkORui8VIk">
+                <papertitle>DiverseDream: Diverse Text-to-3D Synthesis with Augmented Text Embedding</papertitle>
+              </a>
+              <br>
+              <a>Uy Dieu Tran</a>,
+              <a>Minh Luu</a>,        
+              <strong>Phong Nguyen</strong>,
+              <a href="https://www.oulu.fi/university/researcher/janne-heikkila">Janne Heikkilä</a>, 
+              <a href="https://www.khoinguyen.org/">Khoi Nguyen</a>,
+              <a href="https://sonhua.github.io/">Binh-Son Hua</a>
+              <br>
+							<em>arXiv</em>, 2024
+              <br>
+              <a href="https://arxiv.org/abs/2312.02192">arxiv</a> /
+              <a href="data/bib/diverse_dream.bib">bibtex</a>
+              <p></p>
+              <p style="text-align:justify">
+                An intriguing but underexplored problem with existing text-to-3D methods is that 3D models obtained from the sampling-by-optimization procedure tend to have mode collapses, and hence poor diversity in their results. In this paper, we provide an analysis and identify potential causes of such a limited diversity, and then devise a new method that considers the joint generation of different 3D models from the same text prompt, where we propose to use augmented text prompts via textual inversion of reference images to diversify the joint generation.
+							</p>
+            </td>
+          </tr>
+          
+          
+          <tr onmouseout="cas_tpami_stop()" onmouseover="cas_tpami_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='cas_tpami'><video  width=100% height=100% muted autoplay loop>
+                <source src="images/7_cas_tpami/cas_tpami.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video></div>
+                <img src='images/7_cas_tpami/cas_tpami.png' width="160" style="padding-top: 30px;">
+              </div>
+              <script type="text/javascript">
+                function cas_tpami_start() {
+                  document.getElementById('cas_tpami').style.opacity = "1";
+                }
+
+                function cas_tpami_stop() {
+                  document.getElementById('cas_tpami').style.opacity = "0";
+                }
+                cas_tpami_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:middle">
+              <a href="https://www.computer.org/csdl/journal/tp/5555/01/10328666/1SkORui8VIk">
+                <papertitle>Cascaded and Generalizable Neural Radiance Fields for Fast View Synthesis</papertitle>
+              </a>
+              <br>
+              <strong>Phong Nguyen</strong>,
+              <a href="https://lamhuynh.info/">Lam Huynh</a>,
+              <a href="https://esa.rahtu.fi/">Esa Rahtu</a>,        
+              <a href="https://cmp.felk.cvut.cz/~matas/">Jiri Matas</a>,
+              <a href="https://www.oulu.fi/university/researcher/janne-heikkila">Janne Heikkilä</a>      
+              <br>
+							<em>TPAMI</em>, 2024
+              <br>
+              <a href="https://arxiv.org/abs/2208.04717">arxiv</a> /
+              <a href="data/bib/cas_tpami.bib">bibtex</a>
+              <p></p>
+              <p style="text-align:justify">
+                We present CG-NeRF, a cascade and generalizable neural radiance fields method for view synthesis. Our approach addresses the problems of fast and generalizing view synthesis by proposing two novel modules: a coarse radiance fields predictor and a convolutional-based neural renderer. This architecture infers consistent scene geometry based on the implicit neural fields and renders new views efficiently using a single GPU.
+                Moreover, our method can leverage a denser set of reference images of a single scene to produce accurate novel views without relying on additional explicit representations and still maintains the high-speed rendering of the pre-trained model.
+
+							</p>
+            </td>
+          </tr>
+          
+          
           <tr onmouseout="hvsnet_stop()" onmouseover="hvsnet_start()">
             <td style="padding:20px;width:25%;vertical-align:middle">
               <div class="one">
