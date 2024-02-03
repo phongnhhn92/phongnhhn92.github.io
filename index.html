@@ -140,6 +140,41 @@
 							</p>
             </td>
           </tr>
+
+          <tr onmouseout="thesis_stop()" onmouseover="thesis_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='thesis'>
+                  <img src='images/10_thesis/1.png' width="160"></div>
+                <img src='images/10_thesis/2.png' width="160">
+              </div>
+              <script type="text/javascript">
+                function thesis_start() {
+                  document.getElementById('thesis').style.opacity = "1";
+                }
+
+                function thesis_stop() {
+                  document.getElementById('thesis').style.opacity = "0";
+                }
+                thesis_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:middle">
+              <a href="https://www.computer.org/csdl/journal/tp/5555/01/10328666/1SkORui8VIk">
+                <papertitle>Neural scene representations for learning-based view Synthesis</papertitle>
+              </a>
+              <br>
+              <strong>Phong Nguyen</strong>    
+              <br>
+							<em>PhD Thesis</em>, 2023
+              <br>
+              <a href="https://oulurepo.oulu.fi/handle/10024/46361"">link</a> 
+              <p></p>
+              <p style="text-align:justify">
+                This thesis introduces learning-based novel view Synthesis approaches using different neural scene representations. Traditional representations, such as voxels or point clouds, are often computationally expensive and challenging to work with. Neural scene representations, on the other hand, can be more compact and efficient, allowing faster processing and better performance. Additionally, neural scene representations can be learned end-to-end from data, enabling them to be adapted to specific tasks and domains.
+							</p>
+            </td>
+          </tr>
           
           
           <tr onmouseout="hvsnet_stop()" onmouseover="hvsnet_start()">
