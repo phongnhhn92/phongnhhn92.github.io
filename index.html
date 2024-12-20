@@ -55,7 +55,94 @@
         </tr>
         </tbody></table>
         
-        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>          
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody> 
+          
+          <tr onmouseout="sharpD_stop()" onmouseover="sharpD_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='sharpD'>
+                  <img src='images/10_sharpDepth/sharpD.gif' width="160"></div>  
+                <img src='images/10_sharpDepth/sharpD.png' width="160">
+              </div>
+              <script type="text/javascript">
+                function sharpD_start() {
+                  document.getElementById('sharpD').style.opacity = "1";
+                }
+
+                function sharpD_stop() {
+                  document.getElementById('sharpD').style.opacity = "0";
+                }
+                sharpD_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:middle">
+              <a href="https://arxiv.org/abs/2411.18229">
+                <papertitle>SharpDepth: Sharpening Metric Depth Predictions Using Diffusion Distillation</papertitle>
+              </a>
+              <br>
+              <a href="https://haiphamcse.github.io/">Duc-Hai Pham</a>,
+              <a href="https://itsthanhtung.github.io/">Tung Do</a>,         
+              <strong>Phong Nguyen</strong>,
+              <a href="https://sonhua.github.io/">Binh-Son Hua</a>,
+              <a href="https://www.khoinguyen.org/">Khoi Nguyen</a>,
+              <a href="https://rangnguyen.github.io/">Rang Nguyen</a>
+              <br>
+							<em>in submission</em>
+              <br>
+              <a href="https://arxiv.org/abs/2411.18229">arxiv</a> /
+              <a href="https://sharpdepth.github.io/">project page</a> /
+              <a href="https://haiphamcse.github.io/">code (coming soon)</a> /
+              <a href="data/bib/sharpDepth.bib">bibtex</a>
+              <p></p>
+              <p style="text-align:justify">
+                We propose SharpDepth, a novel monocular depth estimation approach that combines the metric accuracy of discriminative methods with the boundary sharpness of generative models. Discriminative methods such as UniDepth and Metric3D provide accurate metric depth but lack detail, while generative models offer sharp boundaries but low metric accuracy. SharpDepth bridges this gap, delivering precise and sharp depth predictions. Zero-shot evaluations on standard benchmarks demonstrate its effectiveness, making it ideal for applications demanding high-quality depth perception in diverse real-world scenarios.
+              </p>
+            </td>
+          </tr>
+          
+          <tr onmouseout="ssc_stop()" onmouseover="ssc_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='ssc'>
+                  <img src='images/9_ssc/ssc.gif' width="160"></div>  
+                <img src='images/9_ssc/ssc.png' width="160">
+              </div>
+              <script type="text/javascript">
+                function ssc_start() {
+                  document.getElementById('ssc').style.opacity = "1";
+                }
+
+                function ssc_stop() {
+                  document.getElementById('ssc').style.opacity = "0";
+                }
+                ssc_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:middle">
+              <a href="https://arxiv.org/abs/2408.11559">
+                <papertitle>Semi-supervised 3D Semantic Scene Completion with 2D Vision Foundation Model Guidance</papertitle>
+              </a>
+              <br>
+              <a href="https://haiphamcse.github.io/">Duc-Hai Pham</a>,
+              <a>Tuan Ho</a>,        
+              <a>Dung Nguyen Duc</a>,
+              <a>Anh Pham</a>,      
+              <strong>Phong Nguyen</strong>,
+              <a href="https://www.khoinguyen.org/">Khoi Nguyen</a>,
+              <a href="https://rangnguyen.github.io/">Rang Nguyen</a>
+              <br>
+							<em>AAAI</em>, 2025
+              <br>
+              <a href="https://arxiv.org/abs/2408.11559">arxiv</a> /
+              <a href="https://haiphamcse.github.io/">code (coming soon)</a> /
+              <a href="data/bib/ssc.bib">bibtex</a>
+              <p></p>
+              <p style="text-align:justify">
+Accurate 3D semantic occupancy prediction from 2D images is crucial for autonomous agents' planning and navigation. Current methods rely on fully supervised learning with costly LiDAR data and intensive voxel-wise labeling, limiting scalability. We propose a semi-supervised framework that uses 2D foundation models to extract 3D geometric and semantic cues, reducing reliance on annotated data. Our method is generalizable to various 3D scene completion approaches and achieves up to 85% of fully-supervised performance with only 10% labeled data on SemanticKITTI and NYUv2. This reduces annotation costs and enables broader adoption in camera-based systems.
+              </p>
+            </td>
+          </tr>
+
           <tr onmouseout="dream_stop()" onmouseover="dream_start()">
             <td style="padding:20px;width:25%;vertical-align:middle">
               <div class="one">
