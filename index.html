@@ -56,6 +56,49 @@
         </tbody></table>
         
         <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody> 
+
+          <tr onmouseout="modeD_stop()" onmouseover="modeD_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='modeD'>
+                  <img src='images/11_modeDreamer/modeD.gif' width="160"></div>  
+                <div class="two" id='modeD_static'>
+                <img src='images/11_modeDreamer/modeD.png' width="160"></div>
+              </div>
+              <script type="text/javascript">
+                function modeD_start() {
+                  document.getElementById('modeD').style.opacity = "1";
+                  document.getElementById('modeD_static').style.opacity = "0";
+                }
+
+                function modeD_stop() {
+                  document.getElementById('modeD').style.opacity = "0";
+                  document.getElementById('modeD_static').style.opacity = "1";
+                }
+                modeD_start()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:middle">
+              <a href="https://arxiv.org/abs/2411.18135">
+                <papertitle>ModeDreamer: Mode Guiding Score Distillation for Text-to-3D Generation using Reference Image Prompts</papertitle>
+              </a>
+              <br>
+              <a>Uy Dieu Tran</a>,
+              <a>Minh Luu</a>,        
+              <strong>Phong Nguyen</strong>,
+              <a href="https://www.khoinguyen.org/">Khoi Nguyen</a>,
+              <a href="https://sonhua.github.io/">Binh-Son Hua</a>
+              <br>
+							<em>in submission</em>
+              <br>
+              <a href="https://arxiv.org/abs/2411.18135">arxiv</a> /
+              <a href="data/bib/ModeDreamer.bib">bibtex</a>
+              <p></p>
+              <p style="text-align:justify">
+                Existing Score Distillation Sampling (SDS)-based methods have advanced text-to-3D generation but often produce over-smoothed, low-quality outputs due to mode-seeking behavior and unstable optimization. To address this, we propose a novel image prompt score distillation loss (ISD) that guides text-to-3D optimization toward a specific mode using a reference image. Implemented with IP-Adapter, a lightweight module for image prompts, ISD reduces variance and improves output quality and stability. Experiments on the T3Bench benchmark show that ISD achieves faster optimization and consistently high-quality, visually coherent results.  
+              </p>
+            </td>
+          </tr>
           
           <tr onmouseout="sharpD_stop()" onmouseover="sharpD_start()">
             <td style="padding:20px;width:25%;vertical-align:middle">
