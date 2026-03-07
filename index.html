@@ -102,8 +102,7 @@
               <a href="data/bib/ar2can.bib">bibtex</a>
               <p></p>
               <p style="text-align:justify">
-                Despite progress in text-to-image models, generating reliable multi-human scenes remains difficult, with frequent identity mixing, face duplication, and incorrect person counts. Ar2Can addresses this by separating spatial planning from identity rendering: an Architect predicts where each person should appear, while an Artist diffusion model generates the final image. A spatially grounded reward combining Hungarian alignment and ArcFace similarity ensures correct placement and identity preservation. On MultiHuman-Testbench, Ar2Can significantly improves person count accuracy and identity fidelity while training mostly on synthetic data.
-              </p>
+                Diffusion models generate high-quality images but remain limited by their training resolution, making practical 4K generation slow and computationally expensive. We introduce PixelRush, a tuning-free framework for high-resolution text-to-image generation that performs efficient patch-based denoising in a low-step regime without costly inversion cycles. A seamless patch blending strategy and noise injection mitigate artifacts and over-smoothing. PixelRush generates 4K images in ~20 seconds, achieving 10–35× speedups over prior methods while maintaining high visual fidelity.</p>
             </td>
           </tr>
 
