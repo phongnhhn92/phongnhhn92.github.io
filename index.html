@@ -65,7 +65,97 @@
         
         <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody> 
 
-          <tr onmouseout="modeD_stop()" onmouseover="modeD_start()">
+          <!-- PixelRush paper -->
+           <tr onmouseout="pixelrush_stop()" onmouseover="pixelrush_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='pixelrush'>
+                  <img src='images/13_pixelrush/pr1.png' width="160"></div>  
+                <div class="two" id='pixelrush_static'>
+                <img src='images/13_pixelrush/pr2.png' width="160"></div>
+              </div>
+              <script type="text/javascript">
+                function pixelrush_start() {
+                  document.getElementById('pixelrush').style.opacity = "1";
+                  document.getElementById('pixelrush_static').style.opacity = "0";
+                }
+
+                function pixelrush_stop() {
+                  document.getElementById('pixelrush').style.opacity = "0";
+                  document.getElementById('pixelrush_static').style.opacity = "1";
+                }
+                pixelrush_start()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:middle">
+              <a href="https://arxiv.org/abs/2602.12769">
+                <papertitle>PixelRush: Ultra-Fast, Training-Free High-Resolution Image Generation via One-step Diffusion</papertitle>
+              </a>
+              <br>
+              <a>Hong-Phuc Lai</a>,
+              <strong>Phong Nguyen</strong>,
+              <a>Anh Tran</a>,
+              <br>
+							<em>CVPR 2026</em>
+              <br>
+              <a href="https://arxiv.org/abs/2602.12769">arxiv</a> /
+              <a href="data/bib/ar2can.bib">bibtex</a>
+              <p></p>
+              <p style="text-align:justify">
+                Despite progress in text-to-image models, generating reliable multi-human scenes remains difficult, with frequent identity mixing, face duplication, and incorrect person counts. Ar2Can addresses this by separating spatial planning from identity rendering: an Architect predicts where each person should appear, while an Artist diffusion model generates the final image. A spatially grounded reward combining Hungarian alignment and ArcFace similarity ensures correct placement and identity preservation. On MultiHuman-Testbench, Ar2Can significantly improves person count accuracy and identity fidelity while training mostly on synthetic data.
+              </p>
+            </td>
+          </tr>
+
+          <!-- AR2Can paper -->
+           <tr onmouseout="ar2can_stop()" onmouseover="ar2can_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='ar2can'>
+                  <img src='images/12_ar2can/ar2can.png' width="160"></div>  
+                <div class="two" id='ar2can_static'>
+                <img src='images/12_ar2can/ar2can.png' width="160"></div>
+              </div>
+              <script type="text/javascript">
+                function ar2can_start() {
+                  document.getElementById('ar2can').style.opacity = "1";
+                  document.getElementById('ar2can_static').style.opacity = "0";
+                }
+
+                function ar2can_stop() {
+                  document.getElementById('ar2can').style.opacity = "0";
+                  document.getElementById('ar2can_static').style.opacity = "1";
+                }
+               ar2can_start()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:middle">
+              <a href="https://arxiv.org/abs/2411.18135">
+                <papertitle>Ar2Can: An Architect and an Artist Leveraging Canvas for Multi-Human Generation</papertitle>
+              </a>
+              <br>
+              <a>Shubhankar Borse</a>,
+              <a>Phuc Pham</a>,  
+              <a>Farzad Farhadzadeh</a>,
+              <a>Seokeon Choi</a>,
+              <strong>Phong Nguyen</strong>,
+              <a>Anh Tran</a>,
+              <a>Sungrack Yun</a>,
+              <a>Munawar Hayat</a>,
+              <a>Fatih Porikli</a>
+              <br>
+							<em>CVPR 2026</em>
+              <br>
+              <a href="https://arxiv.org/abs/2511.22690">arxiv</a> /
+              <a href="data/bib/ar2can.bib">bibtex</a>
+              <p></p>
+              <p style="text-align:justify">
+                Despite progress in text-to-image models, generating reliable multi-human scenes remains difficult, with frequent identity mixing, face duplication, and incorrect person counts. Ar2Can addresses this by separating spatial planning from identity rendering: an Architect predicts where each person should appear, while an Artist diffusion model generates the final image. A spatially grounded reward combining Hungarian alignment and ArcFace similarity ensures correct placement and identity preservation. On MultiHuman-Testbench, Ar2Can significantly improves person count accuracy and identity fidelity while training mostly on synthetic data.
+              </p>
+            </td>
+          </tr>
+
+          <!-- <tr onmouseout="modeD_stop()" onmouseover="modeD_start()">
             <td style="padding:20px;width:25%;vertical-align:middle">
               <div class="one">
                 <div class="two" id='modeD'>
@@ -106,7 +196,7 @@
                 Existing Score Distillation Sampling (SDS)-based methods have advanced text-to-3D generation but often produce over-smoothed, low-quality outputs due to mode-seeking behavior and unstable optimization. To address this, we propose a novel image prompt score distillation loss (ISD) that guides text-to-3D optimization toward a specific mode using a reference image. Implemented with IP-Adapter, a lightweight module for image prompts, ISD reduces variance and improves output quality and stability. Experiments on the T3Bench benchmark show that ISD achieves faster optimization and consistently high-quality, visually coherent results.  
               </p>
             </td>
-          </tr>
+          </tr> -->
           
           <tr onmouseout="sharpD_stop()" onmouseover="sharpD_start()">
             <td style="padding:20px;width:25%;vertical-align:middle">
