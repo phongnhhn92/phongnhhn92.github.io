@@ -65,6 +65,48 @@
         
         <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody> 
 
+          <tr onmouseout="swifttailor_stop()" onmouseover="swifttailor_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='swifttailor'>
+                  <img src='images/14_swifttailor/animate.gif' width="160"></div>  
+                <div class="two" id='swifttailor_static'>
+                <img src='images/14_swifttailor/1.png' width="160"></div>
+              </div>
+              <script type="text/javascript">
+                function swifttailor_start() {
+                  document.getElementById('swifttailor').style.opacity = "1";
+                  document.getElementById('swifttailor_static').style.opacity = "0";
+                }
+
+                function swifttailor_stop() {
+                  document.getElementById('swifttailor').style.opacity = "0";
+                  document.getElementById('swifttailor_static').style.opacity = "1";
+                }
+                swifttailor_start()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:middle">
+              <a href="https://qualcomm-ai-research.github.io/SwiftTailor/">
+                <papertitle>SwiftTailor: Efficient 3D Garment Generation with Geometry Image Representation</papertitle>
+              </a>
+              <br>
+              <a>Phuc Pham</a>,
+              <a>Uy Dieu Tran</a>,
+              <a>Binh-Son Hua</a>,
+              <strong>Phong Nguyen</strong>
+              <br>
+							<em>CVPR 2026 Highlight</em>
+              <br>
+              <a href="https://qualcomm-ai-research.github.io/SwiftTailor/">project page</a> /
+              <a href="https://arxiv.org/abs/2603.19053">arxiv</a>
+              <p></p>
+              <p style="text-align:justify">
+                SwiftTailor introduces a two-stage framework for efficient and high-quality 3D garment generation. It combines a sewing-pattern reasoning module with a geometry-based mesh synthesis module, using a compact geometry image representation to directly reconstruct simulation-ready garment meshes without relying on a physics simulator.
+              </p>
+            </td>
+          </tr>
+
           <!-- PixelRush paper -->
            <tr onmouseout="pixelrush_stop()" onmouseover="pixelrush_start()">
             <td style="padding:20px;width:25%;vertical-align:middle">
@@ -88,7 +130,7 @@
               </script>
             </td>
             <td style="padding:20px;width:75%;vertical-align:middle">
-              <a href="https://arxiv.org/abs/2602.12769">
+              <a href="https://qualcomm-ai-research.github.io/PixelRush/">
                 <papertitle>PixelRush: Ultra-Fast, Training-Free High-Resolution Image Generation via One-step Diffusion</papertitle>
               </a>
               <br>
@@ -96,10 +138,10 @@
               <strong>Phong Nguyen</strong>,
               <a>Anh Tran</a>,
               <br>
-							<em>CVPR 2026</em>
+							<em>CVPR 2026 Highlight</em>
               <br>
-              <a href="https://arxiv.org/abs/2602.12769">arxiv</a> /
-              <a href="data/bib/ar2can.bib">bibtex</a>
+              <a href="https://qualcomm-ai-research.github.io/PixelRush/">project page</a> /
+              <a href="https://arxiv.org/abs/2602.12769">arxiv</a>
               <p></p>
               <p style="text-align:justify">
                 Diffusion models generate high-quality images but remain limited by their training resolution, making practical 4K generation slow and computationally expensive. We introduce PixelRush, a tuning-free framework for high-resolution text-to-image generation that performs efficient patch-based denoising in a low-step regime without costly inversion cycles. A seamless patch blending strategy and noise injection mitigate artifacts and over-smoothing. PixelRush generates 4K images in ~20 seconds, achieving 10–35× speedups over prior methods while maintaining high visual fidelity.</p>
@@ -150,6 +192,46 @@
               <p></p>
               <p style="text-align:justify">
                 Despite progress in text-to-image models, generating reliable multi-human scenes remains difficult, with frequent identity mixing, face duplication, and incorrect person counts. Ar2Can addresses this by separating spatial planning from identity rendering: an Architect predicts where each person should appear, while an Artist diffusion model generates the final image. A spatially grounded reward combining Hungarian alignment and ArcFace similarity ensures correct placement and identity preservation. On MultiHuman-Testbench, Ar2Can significantly improves person count accuracy and identity fidelity while training mostly on synthetic data.
+              </p>
+            </td>
+          </tr>
+
+          <tr onmouseout="invfill_stop()" onmouseover="invfill_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='invfill'>
+                  <img src='images/15_invfill/000000120_2us.png' width="160"></div>  
+                <div class="two" id='invfill_static'>
+                <img src='images/15_invfill/000000120.png' width="160"></div>
+              </div>
+              <script type="text/javascript">
+                function invfill_start() {
+                  document.getElementById('invfill').style.opacity = "1";
+                  document.getElementById('invfill_static').style.opacity = "0";
+                }
+
+                function invfill_stop() {
+                  document.getElementById('invfill').style.opacity = "0";
+                  document.getElementById('invfill_static').style.opacity = "1";
+                }
+                invfill_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:middle">
+              <a href="https://qualcomm-ai-research.github.io/InverFill/">
+                <papertitle>InverFill: One-Step Inversion for Enhanced Few-Step Diffusion Inpainting</papertitle>
+              </a>
+              <br>
+              <a>Qualcomm AI Research</a>,
+              <a>Posts & Telecommunications Inst. of Tech., Vietnam</a>
+              <br>
+							<em>CVPR 2026</em>
+              <br>
+              <a href="https://qualcomm-ai-research.github.io/InverFill/">project page</a> /
+              <a href="https://arxiv.org/abs/2603.23463">arxiv</a>
+              <p></p>
+              <p style="text-align:justify">
+                InverFill improves few-step diffusion inpainting by learning a one-step inversion network that maps masked images to noise latents with minimal overhead. The method is architecture-agnostic and consistently boosts inpainting quality across different diffusion backbones and evaluation benchmarks.
               </p>
             </td>
           </tr>
@@ -769,7 +851,7 @@ Additionally, an enhancer network leverages the overall fidelity, even in occlud
           </tr>          
         </tbody></table>
 
-        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+        <!-- <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
           <tr>
           <td style="padding:20px;width:100%;vertical-align:middle">
             <heading><strong style="font-size:20px">Reading Group for Vietnamese</strong> </heading>
@@ -784,7 +866,7 @@ Additionally, an enhancer network leverages the overall fidelity, even in occlud
             </p>
           </td>
         </tr>
-      </tbody></table>
+      </tbody></table> -->
       <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
          
       </tbody></table>
