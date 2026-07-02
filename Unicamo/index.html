@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track the Noise, Move the World — 3D-Grounded Motion-Consistent Noise for Controllable Video Generation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-0:#07080d;
+  --bg-1:#0d1018;
+  --bg-2:#141826;
+  --panel:rgba(20,24,38,.65);
+  --panel-border:rgba(120,140,200,.18);
+  --accent-1:#7cf0ff;
+  --accent-2:#b388ff;
+  --accent-3:#ff7eb6;
+  --text-primary:#eaeefb;
+  --text-muted:#9aa3bd;
+  --gradient-hero:linear-gradient(135deg,#7cf0ff 0%,#b388ff 50%,#ff7eb6 100%);
+}
+
+/* ─── reset ─── */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:64px;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--text-primary);
+  background-color:var(--bg-0);line-height:1.65;overflow-x:hidden;position:relative;}
+a{color:var(--accent-1);text-decoration:none;}a:hover{text-decoration:underline;}
+img{max-width:100%;height:auto;display:block;}
+video{display:block;}
+
+/* ─── animated background ─── */
+body::before{content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(circle at 20% 10%,rgba(124,240,255,.12),transparent 40%),
+    radial-gradient(circle at 80% 30%,rgba(179,136,255,.12),transparent 40%),
+    radial-gradient(circle at 40% 80%,rgba(255,126,182,.10),transparent 40%);
+  z-index:-2;animation:float 20s ease-in-out infinite;pointer-events:none;}
+body::after{content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(120,140,200,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(120,140,200,.04) 1px,transparent 1px);
+  background-size:40px 40px;z-index:-1;
+  mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
+  -webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);pointer-events:none;}
+@keyframes float{
+  0%,100%{transform:translate(0,0);}
+  33%{transform:translate(-20px,20px);}
+  66%{transform:translate(20px,-20px);}
+}
+@keyframes shimmer{
+  0%,100%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+}
+
+/* ─── scroll progress bar ─── */
+#progress-bar{position:fixed;top:0;left:0;height:3px;width:0%;
+  background:var(--gradient-hero);z-index:9999;transition:width .1s linear;
+  box-shadow:0 0 12px rgba(124,240,255,.4);}
+
+/* ─── sticky navbar ─── */
+#navbar{position:fixed;top:3px;left:0;right:0;z-index:900;
+  background:rgba(13,16,24,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--panel-border);
+  transform:translateY(-100%);transition:transform .3s ease;height:56px;}
+#navbar.visible{transform:translateY(0);}
+.nav-inner{max-width:1180px;margin:0 auto;padding:0 24px;height:100%;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;}
+.nav-brand{font-size:13px;font-weight:700;color:var(--text-primary);white-space:nowrap;
+  letter-spacing:.04em;font-family:'JetBrains Mono',monospace;text-transform:uppercase;}
+.nav-brand span{background:var(--gradient-hero);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;font-style:normal;}
+.nav-links{display:flex;gap:2px;flex-wrap:wrap;}
+.nav-links a{font-size:11.5px;font-weight:600;color:var(--text-muted);padding:6px 12px;border-radius:6px;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;
+  transition:background .18s,color .18s;}
+.nav-links a:hover,.nav-links a.active{background:rgba(124,240,255,.08);color:var(--accent-1);text-decoration:none;}
+
+/* ─── layout ─── */
+.container{max-width:1000px;margin:0 auto;padding:0 24px;}
+.container.wide{max-width:1280px;}
+section{padding:78px 0;position:relative;}
+
+/* ─── hero ─── */
+.hero{padding:96px 0 64px;text-align:center;color:var(--text-primary);
+  position:relative;overflow:hidden;}
+.hero-dots{display:none;}
+.hero::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 900px 320px at 50% 50%,rgba(124,240,255,.06),transparent 70%);
+  pointer-events:none;}
+.hero h1{font-size:clamp(26px,3.6vw,46px);font-weight:800;line-height:1.18;letter-spacing:-.02em;
+  max-width:1000px;margin:0 auto 18px;position:relative;z-index:1;}
+.hero h1 .brand{display:block;margin-bottom:6px;
+  background:var(--gradient-hero);background-size:200% 200%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:shimmer 6s ease-in-out infinite;font-style:normal;}
+
+.venue{display:inline-block;padding:6px 16px;border:1px solid var(--panel-border);
+  border-radius:999px;background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--accent-1);
+  margin-bottom:28px;position:relative;z-index:1;text-shadow:none;}
+.highlight-badge{display:inline-flex;align-items:center;gap:8px;
+  background:var(--panel);border:1px solid var(--panel-border);
+  border-radius:999px;padding:7px 22px;font-size:12px;font-weight:600;
+  color:var(--accent-2);letter-spacing:.12em;text-transform:uppercase;
+  font-family:'JetBrains Mono',monospace;
+  margin-bottom:28px;position:relative;z-index:1;}
+
+.authors-line{font-size:15px;color:var(--text-muted);font-weight:400;
+  margin:0 calc(50% - 50vw) 6px;padding:0 24px;position:relative;z-index:1;
+  line-height:1.75;text-align:center;}
+.authors-line b{font-weight:600;color:var(--text-primary);}
+.authors-line a{color:var(--accent-1);text-decoration:none;transition:color .15s,text-shadow .15s;}
+.authors-line a:hover{color:var(--accent-3);text-shadow:0 0 14px rgba(255,126,182,.4);text-decoration:none;}
+.affil-line{font-size:13px;color:var(--text-muted);margin-bottom:8px;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.06em;
+  position:relative;z-index:1;font-style:normal;}
+.email-line{font-size:13px;color:var(--text-muted);margin-bottom:32px;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.04em;
+  position:relative;z-index:1;font-style:normal;word-break:break-all;}
+.email-line code{font-family:inherit;color:var(--text-primary);background:none;padding:0;}
+
+/* hero stat pills */
+.hero-stats{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;
+  margin-bottom:32px;position:relative;z-index:1;}
+.hpill{background:var(--panel);border:1px solid var(--panel-border);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-radius:14px;padding:14px 22px;min-width:118px;
+  transition:transform .2s,border-color .2s,box-shadow .2s;}
+.hpill:hover{transform:translateY(-2px);border-color:rgba(124,240,255,.4);
+  box-shadow:0 10px 30px rgba(124,240,255,.12);}
+.hpill .pn{font-size:28px;font-weight:800;line-height:1;letter-spacing:-.04em;
+  background:var(--gradient-hero);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;}
+.hpill .pl{font-size:11px;color:var(--text-muted);font-weight:500;margin-top:6px;
+  letter-spacing:.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;}
+
+/* link buttons */
+.btn-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:40px;position:relative;z-index:1;}
+.btn{display:inline-flex;align-items:center;gap:8px;
+  background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--panel-border);border-radius:10px;color:var(--text-primary);
+  font-weight:600;font-size:13px;padding:10px 20px;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.04em;
+  transition:background .18s,border-color .18s,transform .18s,box-shadow .18s;}
+.btn:hover{border-color:var(--accent-1);color:var(--accent-1);transform:translateY(-1px);
+  box-shadow:0 8px 24px rgba(124,240,255,.15);text-decoration:none;}
+.btn svg{width:14px;height:14px;fill:currentColor;flex-shrink:0;}
+.btn.disabled{opacity:.5;cursor:not-allowed;}
+.btn.disabled:hover{border-color:var(--panel-border);color:var(--text-primary);transform:none;box-shadow:none;}
+
+/* hero preview teaser */
+.hero-preview{position:relative;z-index:1;max-width:1080px;margin:0 auto;}
+.hero-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;border-radius:14px;
+  overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.5);}
+.hero-preview-grid .htile{aspect-ratio:16/9;background:#0b0d14;overflow:hidden;}
+.hero-preview-grid video{width:100%;height:100%;object-fit:cover;display:block;}
+.hero-pdf-wrap{border-radius:14px;overflow:hidden;
+  box-shadow:0 24px 64px rgba(0,0,0,.55);
+  border:1px solid var(--panel-border);background:#fff;aspect-ratio:971/480;position:relative;}
+.hero-pdf{width:100%;height:100%;border:0;display:block;}
+.hero-preview-cap{font-size:13px;color:var(--text-muted);margin-top:14px;line-height:1.65;}
+.hero-preview-cap b{color:var(--text-primary);font-weight:600;}
+.hero-preview-cap a{color:var(--accent-1);}
+.hero-preview-cap a:hover{color:var(--accent-3);text-decoration:underline;}
+
+/* method figure */
+.method-fig{margin:8px 0 28px;background:var(--panel);border:1px solid var(--panel-border);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-radius:18px;padding:18px;overflow:hidden;position:relative;}
+.method-fig img{width:100%;height:auto;border-radius:10px;display:block;cursor:zoom-in;
+  transition:transform .25s,box-shadow .25s;background:#fff;}
+.method-fig img:hover{transform:scale(1.005);box-shadow:0 8px 28px rgba(124,240,255,.12);}
+.method-fig figcaption{margin-top:14px;font-size:13.5px;color:var(--text-muted);line-height:1.65;text-align:center;}
+.method-fig figcaption b{color:var(--text-primary);font-weight:600;}
+.method-fig figcaption em{color:var(--accent-1);font-style:normal;font-weight:500;}
+
+/* ─── section titles ─── */
+.section-header{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+.section-num{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+  color:var(--bg-0);background:var(--gradient-hero);padding:6px 12px;border-radius:8px;
+  letter-spacing:.05em;}
+.section-divider-flex{flex:1;height:1px;
+  background:linear-gradient(90deg,var(--panel-border),transparent);}
+.sec-title{font-size:28px;font-weight:700;color:var(--text-primary);margin:0;letter-spacing:-.01em;}
+.divider-line{display:none;}
+.sec-sub{font-size:15.5px;color:var(--text-muted);margin:0 0 36px;max-width:880px;line-height:1.65;}
+.sec-sub em{color:var(--accent-1);font-style:normal;font-weight:500;}
+
+/* ─── abstract ─── */
+.abstract-text{font-size:16px;line-height:1.8;color:var(--text-primary);max-width:880px;font-weight:300;}
+.abstract-text + .abstract-text{margin-top:18px;}
+.abstract-text b{color:var(--text-primary);font-weight:600;}
+.abstract-text em{color:var(--accent-1);font-style:normal;font-weight:500;}
+
+/* ─── method cards ─── */
+.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px;}
+.mcard{background:var(--panel);border:1px solid var(--panel-border);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-radius:16px;padding:24px 22px;cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .22s,border-color .22s,box-shadow .22s;}
+.mcard::before{content:'';position:absolute;left:0;top:18px;bottom:18px;width:3px;
+  background:var(--accent-1);border-radius:0 3px 3px 0;}
+.mcard:hover{transform:translateY(-3px);border-color:rgba(124,240,255,.35);
+  box-shadow:0 12px 32px rgba(124,240,255,.10);}
+.mcard.orange::before{background:var(--accent-3);}
+.mcard.teal::before{background:var(--accent-2);}
+.mcard.purple::before{background:var(--accent-2);}
+.mcard h3{font-size:15.5px;font-weight:700;color:var(--text-primary);margin-bottom:8px;letter-spacing:-.01em;}
+.mcard p{font-size:13.5px;color:var(--text-muted);line-height:1.65;}
+.mcard .tag{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;
+  padding:4px 11px;margin-bottom:10px;background:rgba(124,240,255,.10);
+  color:var(--accent-1);border:1px solid rgba(124,240,255,.25);
+  font-family:'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;}
+.mcard.orange .tag{background:rgba(255,126,182,.10);color:var(--accent-3);border-color:rgba(255,126,182,.25);}
+.mcard.teal .tag{background:rgba(179,136,255,.10);color:var(--accent-2);border-color:rgba(179,136,255,.25);}
+.mcard.purple .tag{background:rgba(179,136,255,.10);color:var(--accent-2);border-color:rgba(179,136,255,.25);}
+.mcard-extra{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+.mcard.expanded .mcard-extra{max-height:260px;}
+.mcard-extra p{font-size:13px;color:var(--text-muted);margin-top:12px;padding-top:12px;
+  border-top:1px solid var(--panel-border);}
+.mcard-extra code{font-family:'JetBrains Mono',monospace;font-size:12px;
+  background:rgba(124,240,255,.08);color:var(--accent-1);padding:1px 6px;border-radius:4px;}
+
+.method-summary{background:var(--panel);border:1px solid var(--panel-border);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-radius:16px;padding:22px 24px;margin-top:18px;font-size:14.5px;
+  color:var(--text-primary);line-height:1.75;position:relative;font-weight:300;}
+.method-summary::before{content:'';position:absolute;left:0;top:18px;bottom:18px;width:3px;
+  background:var(--accent-3);border-radius:0 3px 3px 0;}
+.method-summary b{color:var(--text-primary);font-weight:600;}
+.method-summary em{color:var(--accent-1);font-style:normal;font-weight:500;}
+
+/* ─── teaser carousel (Model Capability) ─── */
+.panel{background:var(--panel);border:1px solid var(--panel-border);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-radius:18px;padding:24px;position:relative;overflow:hidden;}
+.teaser-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+.nav-btn{background:var(--panel);border:1px solid var(--panel-border);color:var(--text-primary);
+  width:42px;height:42px;border-radius:12px;cursor:pointer;font-size:18px;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:all .2s ease;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+.nav-btn:hover{border-color:var(--accent-1);color:var(--accent-1);transform:translateY(-1px);
+  box-shadow:0 8px 24px rgba(124,240,255,.15);}
+.nav-btn:active{transform:translateY(0);}
+.tab-pill{padding:8px 16px;border-radius:999px;
+  background:rgba(255,255,255,.04);border:1px solid var(--panel-border);
+  font-size:12.5px;font-weight:500;color:var(--text-muted);cursor:pointer;
+  transition:all .2s ease;font-family:'JetBrains Mono',monospace;letter-spacing:.05em;}
+.tab-pill:hover{color:var(--text-primary);}
+.tab-pill.active{background:var(--gradient-hero);color:var(--bg-0);
+  border-color:transparent;font-weight:600;}
+.teaser-label{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11.5px;
+  color:var(--text-muted);letter-spacing:.12em;text-transform:uppercase;font-weight:500;}
+
+/* ─── grids for media tiles ─── */
+.grid-1x3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.grid-1x4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.grid-2x4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+.col-label-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px;}
+.col-label{text-align:center;font-family:'JetBrains Mono',monospace;font-size:11.5px;
+  font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-1);
+  padding:6px 4px;border-bottom:2px solid;border-image:var(--gradient-hero) 1;}
+.col-label.ours{color:var(--accent-3);}
+
+.row-label{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--accent-1);
+  margin:0 0 12px 0;padding-left:10px;position:relative;display:inline-block;}
+.row-label::before{content:'';position:absolute;left:-2px;top:50%;transform:translateY(-50%);
+  width:4px;height:14px;background:var(--gradient-hero);border-radius:2px;}
+
+.media-tile{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/9;
+  background:#0b0d14;border:1px solid var(--panel-border);
+  transition:transform .25s ease,box-shadow .25s ease;
+  display:flex;align-items:center;justify-content:center;}
+.media-tile:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,240,255,.18);}
+.media-tile.alpha-bg{background-color:#f5f6fb;
+  background-image:
+    linear-gradient(45deg,#e3e6f0 25%,transparent 25%),
+    linear-gradient(-45deg,#e3e6f0 25%,transparent 25%),
+    linear-gradient(45deg,transparent 75%,#e3e6f0 75%),
+    linear-gradient(-45deg,transparent 75%,#e3e6f0 75%);
+  background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0;}
+.media-tile video{width:100%;height:100%;object-fit:cover;display:block;}
+.media-tile.crisp video{image-rendering:pixelated;image-rendering:crisp-edges;object-fit:contain;}
+.media-tile img{width:100%;height:100%;object-fit:contain;display:block;cursor:zoom-in;}
+.media-tile.fit-image{aspect-ratio:16/9;}
+.media-tile.video-error::after{content:'⚠ video failed to decode (codec?)';position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;background:rgba(255,90,90,.12);
+  color:#ff8a8a;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.05em;
+  text-align:center;padding:8px;border:1px dashed rgba(255,138,138,.4);border-radius:12px;pointer-events:none;}
+
+.row-tag{position:absolute;top:10px;left:10px;background:rgba(7,8,13,.78);
+  color:var(--accent-1);font-family:'JetBrains Mono',monospace;font-size:11px;
+  padding:4px 8px;border-radius:6px;letter-spacing:.08em;
+  border:1px solid rgba(124,240,255,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  z-index:2;font-weight:600;text-transform:uppercase;}
+.row-tag.gen{color:var(--accent-3);border-color:rgba(255,126,182,.3);}
+
+/* ─── expand-video button (overlay on every tile that holds a <video>) ─── */
+.video-expand-btn{position:absolute;top:8px;right:8px;width:30px;height:30px;
+  border-radius:8px;background:rgba(7,8,13,.78);border:1px solid rgba(255,255,255,.18);
+  color:#fff;cursor:pointer;z-index:3;opacity:0;padding:0;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:opacity .2s ease,background .15s,transform .15s,border-color .15s;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.video-expand-btn svg{width:14px;height:14px;fill:currentColor;}
+.video-expand-btn:hover{background:rgba(7,8,13,.95);border-color:var(--accent-1);
+  color:var(--accent-1);transform:scale(1.08);}
+.media-tile:hover .video-expand-btn,
+.htile:hover .video-expand-btn,
+.ui-video-wrap:hover .video-expand-btn{opacity:1;}
+@media (hover:none){.video-expand-btn{opacity:.85;}}
+.hero-preview-grid .htile{position:relative;}
+.ui-video-wrap{position:relative;}
+
+/* ─── caption boxes ─── */
+.caption{margin-top:16px;padding:14px 18px;
+  background:linear-gradient(135deg,rgba(124,240,255,.06),rgba(179,136,255,.06));
+  border-left:3px solid var(--accent-2);border-radius:0 8px 8px 0;
+  font-size:14px;color:var(--text-primary);line-height:1.7;font-weight:300;}
+.caption strong{color:var(--accent-1);font-weight:600;}
+.caption em{font-style:italic;color:var(--text-muted);}
+
+/* ─── noise sub-blocks ─── */
+.sub-block{margin-bottom:36px;}
+.sub-block:last-child{margin-bottom:0;}
+.sub-block h3{font-size:18px;font-weight:600;color:var(--text-primary);margin:0 0 16px;
+  display:inline-flex;align-items:center;gap:10px;letter-spacing:-.01em;}
+.sub-block h3::before{content:'';width:8px;height:8px;border-radius:50%;
+  background:var(--gradient-hero);box-shadow:0 0 12px var(--accent-1);}
+
+/* ─── comparison ─── */
+.comp-card{margin-bottom:20px;padding:24px;}
+.comp-index{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11.5px;
+  font-weight:600;color:var(--accent-2);margin-bottom:12px;letter-spacing:.12em;text-transform:uppercase;}
+.comp-prompt{margin:0 0 16px;padding:12px 16px;background:rgba(255,255,255,.03);
+  border-left:2px solid var(--accent-3);border-radius:0 8px 8px 0;
+  font-size:13.5px;line-height:1.65;color:var(--text-primary);font-style:italic;font-weight:300;}
+.comp-prompt::before{content:'\201C';color:var(--accent-3);font-size:18px;font-weight:700;
+  margin-right:4px;font-style:normal;}
+.comp-prompt::after{content:'\201D';color:var(--accent-3);font-size:18px;font-weight:700;
+  margin-left:2px;font-style:normal;}
+
+/* ─── UI demo ─── */
+.ui-video-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--panel-border);
+  background:#000;}
+.ui-video-wrap video{width:100%;display:block;}
+.ui-caption{margin:14px 0 0;color:var(--text-muted);font-size:14px;line-height:1.65;}
+
+/* ─── quantitative table (kept on LIGHT background per request) ─── */
+.table-wrap{overflow-x:auto;border-radius:14px;background:#fff;
+  border:1px solid var(--panel-border);box-shadow:0 8px 32px rgba(0,0,0,.4);}
+table{width:100%;border-collapse:collapse;font-size:13.5px;color:#111827;font-family:'Inter',sans-serif;}
+thead th{background:linear-gradient(135deg,#1a1f33,#0d1018);color:#eaeefb;
+  padding:13px 12px;text-align:center;font-weight:600;font-size:11.5px;
+  white-space:nowrap;letter-spacing:.08em;font-family:'JetBrains Mono',monospace;text-transform:uppercase;}
+thead th:first-child{text-align:left;}
+tbody td{padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:center;
+  transition:background .15s;color:#374151;}
+tbody td:first-child{text-align:left;font-weight:600;color:#111827;}
+tbody tr{transition:background .15s;}
+tbody tr:nth-child(even){background:#fafbfd;}
+tbody tr:hover td{background:#eff6ff;}
+.tr-ours td{background:linear-gradient(90deg,rgba(124,240,255,.10),rgba(179,136,255,.06))!important;font-weight:700;}
+.tr-ours td:first-child{
+  background:linear-gradient(90deg,rgba(124,240,255,.18),rgba(179,136,255,.10))!important;
+  color:#1b3e8f;}
+.best{color:#6230b8;font-weight:800;}
+.table-note{font-size:12.5px;color:var(--text-muted);margin-top:14px;line-height:1.6;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.02em;}
+.table-note .best{color:var(--accent-2);font-weight:600;}
+
+/* ─── lightbox ─── */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:10000;
+  display:none;align-items:center;justify-content:center;cursor:zoom-out;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+#lightbox.open{display:flex;}
+#lightbox img,#lightbox video{max-width:94vw;max-height:92vh;border-radius:10px;
+  box-shadow:0 24px 80px rgba(0,0,0,.7);object-fit:contain;background:#000;}
+#lightbox video{outline:none;}
+#lb-close{position:absolute;top:20px;right:24px;color:#fff;font-size:24px;cursor:pointer;
+  background:rgba(255,255,255,.10);border:1px solid var(--panel-border);border-radius:10px;
+  padding:4px 14px;line-height:1;transition:background .15s,border-color .15s;z-index:2;
+  font-family:'JetBrains Mono',monospace;}
+#lb-close:hover{background:rgba(255,255,255,.22);border-color:var(--accent-1);}
+
+/* ─── reveal on scroll ─── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease;}
+.reveal.up{opacity:1;transform:none;}
+.reveal-left{opacity:0;transform:translateX(-24px);transition:opacity .55s ease,transform .55s ease;}
+.reveal-left.up{opacity:1;transform:none;}
+.reveal-right{opacity:0;transform:translateX(24px);transition:opacity .55s ease,transform .55s ease;}
+.reveal-right.up{opacity:1;transform:none;}
+
+/* ─── footer ─── */
+.ack{border-top:1px solid var(--panel-border);padding:40px 0;text-align:center;
+  background:rgba(13,16,24,.45);}
+.ack p{font-size:13px;color:var(--text-muted);max-width:740px;margin:0 auto;line-height:1.75;}
+.ack a{color:var(--accent-1);}
+footer{background:var(--bg-0);color:var(--text-muted);text-align:center;
+  padding:24px;font-size:12px;letter-spacing:.08em;
+  font-family:'JetBrains Mono',monospace;text-transform:uppercase;
+  border-top:1px solid var(--panel-border);}
+
+/* ─── responsive ─── */
+@media(max-width:880px){
+  .method-grid{grid-template-columns:1fr;}
+  .grid-1x3,.grid-1x4,.grid-2x4,.hero-preview-grid{grid-template-columns:repeat(2,1fr);}
+  .col-label-bar{display:none;}
+  .nav-links{display:none;}
+  .hero{padding:60px 0 40px;}
+  section{padding:54px 0;}
+  .hero h1{font-size:24px;}
+  .hpill{padding:11px 16px;min-width:90px;}
+  .hpill .pn{font-size:24px;}
+  .sec-title{font-size:24px;}
+}
+@media(max-width:560px){
+  .grid-1x3,.grid-1x4,.grid-2x4,.hero-preview-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- scroll progress -->
+<div id="progress-bar"></div>
+
+<!-- sticky nav -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <span class="nav-brand"><span>Track the Noise, Move the World</span></span>
+    <div class="nav-links">
+      <a href="#abstract">Abstract</a>
+      <a href="#method">Method</a>
+      <a href="#capability">Capability</a>
+      <a href="#noise">Noise</a>
+      <a href="#comparison">Comparison</a>
+      <a href="#quantitative">Metrics</a>
+      <a href="#ui">UI</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" id="top">
+  <div class="hero-dots"></div>
+  <div class="container">
+    <h1>
+      <span class="brand">Track the Noise, Move the World</span>
+      3D-Grounded Motion-Consistent Noise for Controllable Video Generation
+    </h1>
+    <p class="authors-line">
+      <b>Long Vu</b><sup>*</sup>&ensp;&middot;&ensp;<a href="https://tant2tls.github.io/" target="_blank" rel="noopener"><b>Tan Ngo</b></a><sup>*</sup>&ensp;&middot;&ensp;<a href="https://scholar.google.com/citations?user=up0PbDUAAAAJ&hl=en" target="_blank" rel="noopener"><b>Animesh Karnewar</b></a>&ensp;&middot;&ensp;<a href="https://scholar.google.com/citations?user=RZ9pOY4AAAAJ&hl=en" target="_blank" rel="noopener"><b>Amir Habibian</b></a>&ensp;&middot;&ensp;<a href="https://sonhua.github.io/" target="_blank" rel="noopener"><b>Binh-Son Hua</b></a><sup>&dagger;</sup>&ensp;&middot;&ensp;<a href="https://scholar.google.com.vn/citations?user=mDLwSZAAAAAJ&hl=vi" target="_blank" rel="noopener"><b>Hung Bui</b></a>&ensp;&middot;&ensp;<a href="https://scholar.google.com.vn/citations?user=hRV0tY4AAAAJ&hl=vi" target="_blank" rel="noopener"><b>Minh Hoai Nguyen</b></a><br><a href="https://phongnhhn.info/" target="_blank" rel="noopener"><b>Phong Nguyen-Ha</b></a>
+    </p>
+    <p class="affil-line">Qualcomm AI Research<sup>&Dagger;</sup> &nbsp;&middot;&nbsp; <sup>*</sup>Equal contribution &nbsp;&middot;&nbsp; <sup>&dagger;</sup>Binh-Son Hua is affiliated with Trinity College Dublin, Ireland. Work done under consultancy capacity. &nbsp;&middot;&nbsp; <sup>&Dagger;</sup>Qualcomm AI Research is an initiative of Qualcomm Technologies, Inc.</p>
+    <p class="email-line"><code>{vlong, tanngo, karnewar, ahabibia, hson, hungbui, minhhoai, phongnh}@qti.qualcomm.com</code></p>
+
+    <div class="hero-stats">
+      <div class="hpill"><div class="pn">~0.2s</div><div class="pl">warping overhead</div></div>
+      <div class="hpill"><div class="pn">0</div><div class="pl">new inference params</div></div>
+      <div class="hpill"><div class="pn">14B</div><div class="pl">Wan 2.1 base (LoRA)</div></div>
+      <div class="hpill"><div class="pn">SOTA</div><div class="pl">on MoveBench</div></div>
+    </div>
+
+    <div class="btn-row">
+      <a class="btn" href="Unicamo.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+        Paper (PDF)
+      </a>
+      <a class="btn disabled" href="#" onclick="return false;">
+        <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+        Code (available upon acceptance)
+      </a>
+      <a class="btn" href="#capability">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        Watch results
+      </a>
+    </div>
+
+    <div class="hero-preview">
+      <div class="hero-pdf-wrap">
+        <embed src="images/teaser3.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH" type="application/pdf" class="hero-pdf">
+        <noscript>
+          <a href="images/teaser3.pdf" target="_blank">Open teaser PDF</a>
+        </noscript>
+      </div>
+      <p class="hero-preview-cap">
+        <b>Joint object + camera control through input-noise construction.</b>
+        Sparse 3D point tracks warp the noise locally; a virtual noise sphere fills newly revealed regions — no adapters, no control branches.
+        <a href="images/teaser3.pdf" target="_blank" rel="noopener">Open teaser PDF &rsaquo;</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ABSTRACT ══════════ -->
+<section id="abstract">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-num">01</span>
+      <h2 class="sec-title">Abstract</h2>
+      <div class="section-divider-flex"></div>
+    </div>
+    <p class="abstract-text reveal">
+      Modern image-and-text-to-video diffusion models synthesize realistic clips by iteratively denoising a Gaussian noise tensor conditioned on a reference image and a text prompt. Yet existing approaches still lack precise, unified control over both <b>object motion</b> and <b>camera motion</b> within a single generation pass.
+    </p>
+    <p class="abstract-text reveal">
+      We present <em>UniCaMo</em>, a unified framework that controls object trajectories and camera viewpoints simultaneously by <b>directly constructing the input noise</b> of the diffusion model. UniCaMo builds a shared 3D-grounded motion-consistent noise space across latent frames: <b>sparse 3D point tracks</b> warp the noise of the reference frame along object trajectories, while a <b>virtual spherical noise representation</b> provides globally consistent noise for newly revealed regions under camera motion.
+    </p>
+    <p class="abstract-text reveal">
+      Because UniCaMo modifies only the noise, it requires <b>no auxiliary adapters, no control branches, and no architectural changes</b> to the base model. With a lightweight LoRA on Wan 2.1 (14B), UniCaMo reaches state-of-the-art quality and controllability on MoveBench.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════ METHOD ══════════ -->
+<section id="method">
+  <div class="container wide">
+    <div class="section-header reveal">
+      <span class="section-num">02</span>
+      <h2 class="sec-title">Method</h2>
+      <div class="section-divider-flex"></div>
+    </div>
+    <p class="sec-sub reveal">
+      Two complementary noise-warping mechanisms compose a single 3D-grounded motion-consistent latent.
+      <em>Click any card to expand.</em>
+    </p>
+
+    <figure class="method-fig reveal">
+      <img src="images/overall_2.png" alt="UniCaMo pipeline overview" data-lb-method>
+      <figcaption>
+        <b>Pipeline overview.</b> 3D point tracks + camera poses drive <em>Track-the-Noise</em> (local) and <em>Move-the-World</em> (global sphere sampling). Their composition yields a 3D-grounded motion-consistent latent that initializes the frozen video DiT — no extra modules, no architectural changes.
+      </figcaption>
+    </figure>
+
+    <div class="method-grid">
+      <div class="mcard reveal" style="transition-delay:.0s" data-expand>
+        <span class="tag">&#9312; Track-the-Noise</span>
+        <h3>Local Warping via 3D Point Tracks</h3>
+        <p>Project sparse 3D tracks to the latent grid and propagate noise by copying a 3&times;3 patch (R&nbsp;=&nbsp;2) along each trajectory. Collisions resolved with a <b>depth-aware z-buffer</b> — the closer track wins, enforcing plausible occlusion.</p>
+        <div class="mcard-extra"><p>Sparse tracks carry explicit depth, robust to occlusion and viewpoint change. The result is a partial, motion-visible noise prior that already encodes object dynamics before any denoising step is taken.</p></div>
+      </div>
+      <div class="mcard orange reveal" style="transition-delay:.1s" data-expand>
+        <span class="tag">&#9313; Move-the-World</span>
+        <h3>View-Consistent Sphere Sampling</h3>
+        <p>A virtual 3D sphere centered at the first camera, coated with a latitude–longitude Gaussian noise texture. For each frame, cast rays from the camera and sample noise at the sphere intersections — <b>view-consistent noise for every direction</b>.</p>
+        <div class="mcard-extra"><p>Fills the regions track-the-noise cannot cover (disocclusion under camera motion). Sphere radius = <code>max(&alpha;&middot;trajectory-spread, scene-depth)</code> with &alpha; = 1.2, guaranteeing the camera path stays inside.</p></div>
+      </div>
+      <div class="mcard teal reveal" style="transition-delay:.2s" data-expand>
+        <span class="tag">&#9314; Noise Composition</span>
+        <h3>Combine Local and Global Noise</h3>
+        <p>Initialize the latent with Track-the-Noise; fill uncovered pixels with Move-the-World. A small Gaussian-noise blend (&beta;&nbsp;=&nbsp;0.2) restores temporal Gaussianity without hurting motion fidelity.</p>
+        <div class="mcard-extra"><p>The constructed noise is spatially Gaussian by construction, but not temporally Gaussian; the &beta;&nbsp;=&nbsp;0.2 blend is the sweet spot in the paper's ablation — quality stays best while EPE drops.</p></div>
+      </div>
+      <div class="mcard purple reveal" style="transition-delay:.3s" data-expand>
+        <span class="tag">&#9315; Train &amp; Inference</span>
+        <h3>LoRA on a Frozen 14B Backbone</h3>
+        <p>Train LoRA rank 64 on Wan 2.1 I2V (14B) with flow matching, 10K steps. Preprocessing (ViPE depth/pose + TAPIP3D 3D tracks) is offline; at inference, the user draws 3D tracks in a 3D GUI and we warp the noise — <b>~0.2 s overhead, no extra parameters</b>.</p>
+        <div class="mcard-extra"><p>The same noise pipeline supports independent and joint control: motion-only, camera-only, or both. No control adapters, no flow networks, no inference-time modules added.</p></div>
+      </div>
+    </div>
+
+    <div class="method-summary reveal">
+      <b>Why this works.</b> Most controllers inject motion <em>late</em> in the denoising process and operate on <em>2D</em> cues, which leaves the model to resolve 3D ambiguities from incomplete information. UniCaMo flips both choices: motion is encoded <b>up front</b> in the noise, and the cues are <b>3D</b> from the start — so the model sees a latent that is already geometrically consistent with the target camera + object trajectory.
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MODEL CAPABILITY ══════════ -->
+<section id="capability">
+  <div class="container wide">
+    <div class="section-header reveal">
+      <span class="section-num">03</span>
+      <h2 class="sec-title">Model Capability</h2>
+      <div class="section-divider-flex"></div>
+    </div>
+    <p class="sec-sub reveal">
+      Four control modes our model supports. The same model handles motion, camera, joint, and complex 3D trajectories — <em>click through all four tabs</em> to see every example.
+    </p>
+
+    <div class="panel reveal">
+      <div class="teaser-tabs">
+        <button class="nav-btn" id="teaserPrev" aria-label="Previous">&#8249;</button>
+        <button class="nav-btn" id="teaserNext" aria-label="Next">&#8250;</button>
+        <div id="teaserPills" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+        <span class="teaser-label" id="teaserLabel">MOTION CONTROL</span>
+      </div>
+
+      <div class="row-label">Control Signal</div>
+      <div class="grid-1x3" id="teaserRow1"></div>
+
+      <div class="row-label" style="margin-top:18px;">Generated Result</div>
+      <div class="grid-1x3" id="teaserRow2"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ NOISE VISUALIZATION ══════════ -->
+<section id="noise">
+  <div class="container wide">
+    <div class="section-header reveal">
+      <span class="section-num">04</span>
+      <h2 class="sec-title">Noise Visualization</h2>
+      <div class="section-divider-flex"></div>
+    </div>
+    <p class="sec-sub reveal">How the motion-consistent noise is built at training time and used at inference time.</p>
+
+    <!-- TRAINING -->
+    <div class="sub-block reveal">
+      <h3>Training</h3>
+      <div class="panel">
+        <div class="col-label-bar">
+          <div class="col-label">Ground Truth</div>
+          <div class="col-label">Overlay (Point Track)</div>
+          <div class="col-label">Track the Noise</div>
+          <div class="col-label">Move the World</div>
+        </div>
+        <div class="grid-2x4" id="trainGrid"></div>
+        <div class="caption">
+          <strong>Training.</strong> We warp the noise using the ground-truth video. TAPIP3D extracts 3D tracks; <em>track-the-noise</em> builds the partial, motion-visible noise from them. The grey area is the region <em>track-the-noise</em> cannot cover — <em>move-the-world</em> fills it in to produce the full 3D-grounded motion-consistent noise that conditions the DiT.
+        </div>
+      </div>
+    </div>
+
+    <!-- INFERENCE -->
+    <div class="sub-block reveal">
+      <h3>Inference</h3>
+      <div class="panel">
+        <div class="col-label-bar">
+          <div class="col-label">Control Signal</div>
+          <div class="col-label">Track the Noise</div>
+          <div class="col-label">Move the World</div>
+          <div class="col-label ours">Result</div>
+        </div>
+        <div class="grid-2x4" id="inferGrid"></div>
+        <div class="caption">
+          <strong>Inference.</strong> The user defines a 3D point track in the UI (see the UI demo below). We warp the noise with that track and feed the resulting latent to the DiT — no extra modules, no control adapters.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ COMPARISON ══════════ -->
+<section id="comparison">
+  <div class="container wide">
+    <div class="section-header reveal">
+      <span class="section-num">05</span>
+      <h2 class="sec-title">Comparison</h2>
+      <div class="section-divider-flex"></div>
+    </div>
+    <p class="sec-sub reveal">
+      Side-by-side against the closest baselines. Each row shares the same control signal; <em>Wan-Move</em> and <em>Go-with-the-Flow</em> use the same text prompt as ours. UniCaMo produces sharper detail, cleaner occlusion, and motion that actually follows the user's intent.
+    </p>
+
+    <div id="compList"></div>
+  </div>
+</section>
+
+<!-- ══════════ QUANTITATIVE ══════════ -->
+<section id="quantitative">
+  <div class="container wide">
+    <div class="section-header reveal">
+      <span class="section-num">06</span>
+      <h2 class="sec-title">Quantitative Results</h2>
+      <div class="section-divider-flex"></div>
+    </div>
+    <p class="sec-sub reveal">
+      MoveBench evaluation against adapter-based and noise-warping baselines. UniCaMo is best on every quality and control-fidelity metric in both the single-object and multi-object splits.
+    </p>
+
+    <div class="table-wrap reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>FID (S) &darr;</th>
+            <th>FVD (S) &darr;</th>
+            <th>PSNR (S) &uarr;</th>
+            <th>SSIM (S) &uarr;</th>
+            <th>EPE (S) &darr;</th>
+            <th>FID (M) &darr;</th>
+            <th>FVD (M) &darr;</th>
+            <th>PSNR (M) &uarr;</th>
+            <th>SSIM (M) &uarr;</th>
+            <th>EPE (M) &darr;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>ImageConductor</td><td>34.51</td><td>424.1</td><td>13.4</td><td>0.49</td><td>15.66</td><td>77.5</td><td>764.5</td><td>13.9</td><td>0.51</td><td>9.80</td></tr>
+          <tr><td>LeviTor</td><td>18.12</td><td>98.8</td><td>15.6</td><td>0.54</td><td>3.40</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>MagicMotion</td><td>17.53</td><td>96.7</td><td>14.9</td><td>0.56</td><td>3.20</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>Go-with-the-Flow</td><td>12.49</td><td>216.9</td><td>15.8</td><td>0.62</td><td>3.04</td><td>35.7</td><td>399.4</td><td>16.9</td><td>0.60</td><td>3.71</td></tr>
+          <tr><td>Tora</td><td>22.57</td><td>100.4</td><td>15.7</td><td>0.55</td><td>3.30</td><td>53.2</td><td>350.0</td><td>14.5</td><td>0.54</td><td>3.50</td></tr>
+          <tr><td>Wan-Move</td><td>12.23</td><td>83.5</td><td>17.8</td><td>0.64</td><td>2.60</td><td>28.8</td><td>226.3</td><td>16.7</td><td>0.62</td><td>2.20</td></tr>
+          <tr><td>Wan-Move + TAPIP3D</td><td>12.11</td><td>87.1</td><td>18.1</td><td>0.67</td><td>2.54</td><td>27.6</td><td>294.8</td><td>16.5</td><td>0.65</td><td>2.14</td></tr>
+          <tr class="tr-ours"><td><b>UniCaMo (Ours)</b></td><td class="best">&#9733; 10.36</td><td class="best">&#9733; 78.6</td><td class="best">&#9733; 18.4</td><td class="best">&#9733; 0.73</td><td class="best">&#9733; 2.30</td><td class="best">&#9733; 26.1</td><td class="best">&#9733; 215.2</td><td class="best">&#9733; 18.15</td><td class="best">&#9733; 0.72</td><td class="best">&#9733; 1.92</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note reveal">
+      (S) = single-object split; (M) = multi-object split. <span class="best">Green</span> = best in column.
+      Go-with-the-Flow did not produce meaningful outputs under MoveBench's joint-control protocol in either split.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════ UI DEMO ══════════ -->
+<section id="ui">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-num">07</span>
+      <h2 class="sec-title">UI Demo</h2>
+      <div class="section-divider-flex"></div>
+    </div>
+    <p class="sec-sub reveal">Interactive UI for sketching the 3D point tracks that become the noise-construction control signal.</p>
+
+    <div class="sub-block reveal">
+      <h3>Interface</h3>
+      <div class="ui-video-wrap">
+        <video src="ui_demo/UI.mp4" controls muted playsinline></video>
+      </div>
+    </div>
+
+    <div class="sub-block reveal">
+      <h3>Generated Result</h3>
+      <div class="ui-video-wrap">
+        <video src="ui_demo/result.mp4" controls muted playsinline loop autoplay></video>
+      </div>
+      <p class="ui-caption">Video generated from the 3D track defined in the UI above. No additional conditioning; the track alone drives the warped noise.</p>
+    </div>
+  </div>
+</section>
+
+<!-- footer / attribution -->
+<div class="ack">
+  <div class="container">
+    <p>
+      Page layout adapted from the
+      <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>
+      (in turn adopted from <a href="https://nerfies.github.io/">Nerfies</a>).
+      Released under
+      <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.
+    </p>
+  </div>
+</div>
+<footer><p>Track the Noise, Move the World</p></footer>
+
+<!-- lightbox -->
+<div id="lightbox" onclick="if(event.target.id==='lightbox')closeLB()">
+  <button id="lb-close" onclick="closeLB()">&times;</button>
+  <img id="lb-img" src="" alt="">
+  <video id="lb-video" controls loop playsinline style="display:none;"></video>
+</div>
+
+<script>
+/* ═══ scroll progress bar ═══ */
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}, {passive:true});
+
+/* ═══ sticky navbar ═══ */
+const navbar = document.getElementById('navbar');
+function updateNavbar() {
+  const heroBottom = document.querySelector('.hero').offsetHeight;
+  navbar.classList.toggle('visible', window.scrollY > heroBottom - 80);
+}
+window.addEventListener('scroll', updateNavbar, {passive:true});
+window.addEventListener('resize', updateNavbar);
+updateNavbar();
+
+/* active nav link */
+const navSections = ['abstract','method','capability','noise','comparison','quantitative','ui'];
+window.addEventListener('scroll', () => {
+  const y = window.scrollY + 110;
+  let active = navSections[0];
+  navSections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= y) active = id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + active);
+  });
+}, {passive:true});
+
+/* ═══ reveal on scroll ═══ */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('up'); revealObs.unobserve(e.target); } });
+}, {threshold: 0.1});
+function observeReveal() {
+  document.querySelectorAll('.reveal:not(.up),.reveal-left:not(.up),.reveal-right:not(.up)').forEach(el => revealObs.observe(el));
+}
+observeReveal();
+
+/* ═══ method cards expand ═══ */
+document.querySelectorAll('.mcard[data-expand]').forEach(card => {
+  card.addEventListener('click', () => card.classList.toggle('expanded'));
+});
+
+/* ═══ lightbox (images + videos) ═══ */
+function openLB(src) {
+  const lb  = document.getElementById('lightbox');
+  const img = document.getElementById('lb-img');
+  const vid = document.getElementById('lb-video');
+  vid.pause(); vid.removeAttribute('src'); vid.load();
+  vid.style.display = 'none';
+  img.style.display = '';
+  img.src = src;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function openLBVideo(src) {
+  if (!src) return;
+  const lb  = document.getElementById('lightbox');
+  const img = document.getElementById('lb-img');
+  const vid = document.getElementById('lb-video');
+  img.removeAttribute('src');
+  img.style.display = 'none';
+  vid.style.display = '';
+  vid.src = src;
+  vid.muted = false;
+  vid.play().catch(() => { vid.muted = true; vid.play().catch(()=>{}); });
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLB() {
+  const vid = document.getElementById('lb-video');
+  vid.pause(); vid.removeAttribute('src'); vid.load();
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('lightbox').classList.contains('open')) closeLB();
+});
+function wireLBImages() {
+  document.querySelectorAll('.media-tile img:not([data-lb]), .method-fig img:not([data-lb])').forEach(img => {
+    img.dataset.lb = '1';
+    img.addEventListener('click', () => openLB(img.src));
+  });
+}
+
+/* ═══ Expand button on each video tile ═══ */
+const EXPAND_ICON_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm16 0h-2v4h-4v2h6v-6z"/></svg>';
+function addExpandButton(video) {
+  const tile = video.closest('.media-tile, .htile, .ui-video-wrap');
+  if (!tile || tile.querySelector('.video-expand-btn')) return;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'video-expand-btn';
+  btn.setAttribute('aria-label', 'Expand video');
+  btn.title = 'Expand';
+  btn.innerHTML = EXPAND_ICON_SVG;
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    openLBVideo(video.currentSrc || video.src);
+  });
+  tile.appendChild(btn);
+}
+
+/* ═══ TEASER (Model Capability) ═══ */
+const teaserGroups = [
+    { key: 'motion_control', label: 'Motion Control' },
+    { key: 'camera_control', label: 'Camera Control' },
+    { key: 'joint_control',  label: 'Joint Control' },
+    { key: '3D_cap',         label: 'Complex 3D Trajectory' }
+];
+let teaserIdx = 0;
+
+const teaserRow1  = document.getElementById('teaserRow1');
+const teaserRow2  = document.getElementById('teaserRow2');
+const teaserPills = document.getElementById('teaserPills');
+const teaserLabel = document.getElementById('teaserLabel');
+
+teaserGroups.forEach((g, i) => {
+    const b = document.createElement('button');
+    b.className = 'tab-pill' + (i === 0 ? ' active' : '');
+    b.textContent = g.label;
+    b.onclick = () => { teaserIdx = i; renderTeaser(); };
+    teaserPills.appendChild(b);
+});
+
+function renderTeaser() {
+    const g = teaserGroups[teaserIdx];
+    teaserLabel.textContent = g.label.toUpperCase();
+    document.querySelectorAll('#teaserPills .tab-pill').forEach((p, i) => {
+        p.classList.toggle('active', i === teaserIdx);
+    });
+
+    const r1 = [], r2 = [];
+    for (let i = 1; i <= 3; i++) {
+        r1.push(`
+            <div class="media-tile fit-image">
+                <img src="teaser/${g.key}/${i}.png" alt="control signal ${i}">
+            </div>`);
+        r2.push(`
+            <div class="media-tile">
+                <video src="teaser/${g.key}/${i}.mp4" loop muted playsinline preload="auto"></video>
+            </div>`);
+    }
+    teaserRow1.innerHTML = r1.join('');
+    teaserRow2.innerHTML = r2.join('');
+    observeNewVideos();
+    wireLBImages();
+}
+
+document.getElementById('teaserPrev').onclick = () => {
+    teaserIdx = (teaserIdx - 1 + teaserGroups.length) % teaserGroups.length;
+    renderTeaser();
+};
+document.getElementById('teaserNext').onclick = () => {
+    teaserIdx = (teaserIdx + 1) % teaserGroups.length;
+    renderTeaser();
+};
+
+/* ═══ Lazy-play video observer (avoid browser concurrent-autoplay cap) ═══ */
+const videoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        const v = entry.target;
+        if (entry.isIntersecting) {
+            if (v.paused) v.play().catch(() => {});
+        } else {
+            if (!v.paused) v.pause();
+        }
+    });
+}, { threshold: 0.15 });
+
+function observeNewVideos() {
+    document.querySelectorAll('video:not([data-observed])').forEach(v => {
+        v.dataset.observed = '1';
+        v.muted = true;
+        v.playsInline = true;
+        videoObserver.observe(v);
+        if (v.id !== 'lb-video') addExpandButton(v);
+
+        const markError = () => {
+            const tile = v.closest('.media-tile, .htile, .ui-video-wrap');
+            if (tile) tile.classList.add('video-error');
+        };
+        v.addEventListener('error', markError);
+        v.addEventListener('stalled', () => { if (v.readyState === 0) markError(); });
+        setTimeout(() => {
+            if (v.readyState < 2 && !v.error) {
+                v.load();
+                setTimeout(() => { if (v.readyState < 2) markError(); }, 3000);
+            }
+        }, 4000);
+    });
+}
+
+/* ═══ NOISE: TRAINING ═══ */
+// 2 rows (samples) × 4 cols (gt, overlay, track_the_noise, move_the_world)
+const trainSamples = [
+    {
+        gt:      'noise_visualization/training/gt/dude_buy.mp4',
+        overlay: 'noise_visualization/training/overlay/dude_buy_pts.webm',
+        // swapped: "Track the Noise" column shows *_nobg, "Move the World" shows *_sphere_trick (intentional — see CLAUDE.md)
+        track:   'noise_visualization/training/move_the_world/dude_buy_nobg.webm',
+        move:    'noise_visualization/training/track_the_noise/dude_buy_sphere_trick.webm'
+    },
+    {
+        gt:      'noise_visualization/training/gt/office.mp4',
+        overlay: 'noise_visualization/training/overlay/office_pts.webm',
+        track:   'noise_visualization/training/move_the_world/office_no_bg.webm',
+        move:    'noise_visualization/training/track_the_noise/office_sphere_trick.webm'
+    }
+];
+
+const trainGrid = document.getElementById('trainGrid');
+const trainHtml = [];
+trainSamples.forEach(s => {
+    trainHtml.push(`<div class="media-tile"><video src="${s.gt}" loop muted playsinline preload="auto"></video></div>`);
+    trainHtml.push(`<div class="media-tile alpha-bg"><video src="${s.overlay}" loop muted playsinline preload="auto"></video></div>`);
+    trainHtml.push(`<div class="media-tile alpha-bg crisp"><video src="${s.track}" loop muted playsinline preload="auto"></video></div>`);
+    trainHtml.push(`<div class="media-tile alpha-bg crisp"><video src="${s.move}" loop muted playsinline preload="auto"></video></div>`);
+});
+trainGrid.innerHTML = trainHtml.join('');
+
+/* ═══ NOISE: INFERENCE ═══ */
+// 2 rows × 4 cols (control PNG, track_the_noise, move_the_world, result)
+const inferGrid = document.getElementById('inferGrid');
+const inferHtml = [];
+for (let i = 1; i <= 2; i++) {
+    inferHtml.push(`
+        <div class="media-tile fit-image">
+            <img src="noise_visualization/inference/control_signal/${i}.png" alt="control ${i}">
+        </div>`);
+    inferHtml.push(`<div class="media-tile alpha-bg crisp"><video src="noise_visualization/inference/track_the_noise/${i}.webm" loop muted playsinline preload="auto"></video></div>`);
+    inferHtml.push(`<div class="media-tile alpha-bg crisp"><video src="noise_visualization/inference/move_the_world/${i}.webm" loop muted playsinline preload="auto"></video></div>`);
+    inferHtml.push(`<div class="media-tile"><video src="noise_visualization/inference/result/${i}.mp4" loop muted playsinline preload="auto"></video></div>`);
+}
+inferGrid.innerHTML = inferHtml.join('');
+
+/* ═══ COMPARISON ═══ */
+const COMP_PROMPTS = [
+    "A woman walks to the right, behind the man; the camera remains static.",
+    "A woman walks to the right, in front of the man; the camera remains static.",
+    "A man walks around a woman as the camera arcs to the right.",
+    "A woman walks to the right behind the man; a man walks to the left in front of the woman; the camera follows the man.",
+    "A calm daytime city street with tall buildings, moving cars and taxis, pedestrians on sidewalks, and a muted blue sky, accented by neon signs and streetlights. The camera translates smoothly to the right while gradually moving forward, maintaining steady motion with a slight acceleration near the end to reveal more of the street.",
+    "A scenic, adventurous high-altitude mountain pass with a winding road packed with cars, vans, motorcycles, and RVs, surrounded by steep grassy hills and rocky peaks with patches of snow under a vivid blue sky. The camera glides forward smoothly along the road, subtly drifting left with the curve in a steady, immersive ascent.",
+    "A red crystal elephant walks behind the blue crystal rhino; the camera pans right to follow the elephant's movement.",
+    "A blue wizard and a red wizard walk around each other, with the red wizard coming on top first.",
+    "In a bright room, the camera flatly captures a panoramic view of two foreigners walking with signs. They wore black clothes, hats and sunglasses, held the sign in their hands, walked to a white curtain, turned to face the camera, and raised the sign in their hands.",
+    "In an outdoor park, the camera captures a panoramic view of four foreigners playing tug-of-war. Two foreign black men on the left were wearing gray short-sleeved tops and white pants, and two foreign black women on the right were wearing pink sweatshirts and blue pants. They clasped a white rope with both hands, leaned back, and pushed the ground with their feet hard, smiling. The background is green grass and trees, with several stone benches and a silver railing in the distance.",
+    "In a spacious and bright dance classroom, two ballet dancers are practicing basic skills. In the panoramic flat shot, on the left is a white foreign woman in a black leotard and short skirt, with blond hair; on the right is a little girl in a blue top and white tulle skirt, with black hair. They both knelt on the ground, put their hands on their knees, then slowly raised their arms and stretched them upward, leaning backwards.",
+    "In a bright room, the camera captures a close-up view of two people giving a foot massage to another. The camera sways slightly; they wore white short-sleeves and had oiled hands, massaging another person's feet. The background is a bokeh of white cabinets and yellow shelves with white towels on them.",
+    "Medium shot of a pair of foreign white men and women wearing diving suits walking hand in hand on the beach. The men wore black diving suits and the women wore blue diving suits; each holds a surfboard. The background is the beach and trees in the distance, with a clear sky. The video is shot in a head-up lens, following the characters as they move, with the lens swaying.",
+    "On a quiet sea, the camera captures a panoramic view of two people kayaking. They wore red life jackets and black hats and sat on a white inflatable boat, holding yellow paddles and paddling over the calm water. Some small waves gently pat the coastline in the distance."
+];
+const COMP_N = COMP_PROMPTS.length;
+const compList = document.getElementById('compList');
+const compHtml = [];
+for (let i = 1; i <= COMP_N; i++) {
+    const prompt = COMP_PROMPTS[i - 1];
+    compHtml.push(`
+        <div class="panel comp-card reveal">
+            <span class="comp-index">Example ${String(i).padStart(2, '0')}</span>
+            <p class="comp-prompt">${prompt}</p>
+            <div class="col-label-bar">
+                <div class="col-label">Control Signal</div>
+                <div class="col-label">Go-with-the-Flow</div>
+                <div class="col-label">Wan-Move</div>
+                <div class="col-label ours">UniCaMo (Ours)</div>
+            </div>
+            <div class="grid-1x4">
+                <div class="media-tile fit-image">
+                    <img src="comparision/control_signal/${i}.png" alt="control ${i}">
+                </div>
+                <div class="media-tile">
+                    <video src="comparision/gflow/${i}.mp4" loop muted playsinline preload="auto"></video>
+                </div>
+                <div class="media-tile">
+                    <video src="comparision/wanmove/${i}.mp4" loop muted playsinline preload="auto"></video>
+                </div>
+                <div class="media-tile">
+                    <span class="row-tag gen">Ours</span>
+                    <video src="comparision/unicamo/${i}.mp4" loop muted playsinline preload="auto"></video>
+                </div>
+            </div>
+        </div>`);
+}
+compList.innerHTML = compHtml.join('');
+
+/* ═══ init ═══ */
+renderTeaser();
+observeNewVideos();
+wireLBImages();
+observeReveal();
+</script>
+</body>
+</html>
