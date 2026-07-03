@@ -235,6 +235,24 @@ h3 { font-size: 1.15rem; }
   transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
 }
 
+.work-card.highlight {
+  border-color: rgba(255, 203, 100, 0.45);
+  box-shadow: 0 28px 65px rgba(255, 190, 70, 0.18);
+  background: rgba(255, 211, 120, 0.04);
+}
+
+.work-card.highlight .work-media {
+  background: linear-gradient(180deg, rgba(255, 225, 150, 0.16), rgba(255, 180, 80, 0.05));
+}
+
+.work-card.highlight .work-content h3 {
+  color: #ffd77f;
+}
+
+.work-card.highlight .card-links a {
+  color: #ffd77f;
+}
+
 .work-card:hover {
   transform: translateY(-4px);
   border-color: rgba(121,184,255,0.45);

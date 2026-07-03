@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260">
+  <rect width="400" height="260" rx="24" fill="#202023" />
+  <rect x="32" y="28" width="336" height="16" fill="#3a3a3f" />
+  <rect x="32" y="56" width="336" height="12" fill="#2e2e33" />
+  <rect x="32" y="80" width="240" height="12" fill="#3a3a3f" />
+  <rect x="32" y="108" width="312" height="12" fill="#2e2e33" />
+  <rect x="32" y="136" width="280" height="12" fill="#3a3a3f" />
+  <rect x="32" y="164" width="260" height="12" fill="#2e2e33" />
+  <text x="32" y="228" fill="#cccccc" font-family="Inter, sans-serif" font-size="24" font-weight="700">New Paper</text>
+</svg>
